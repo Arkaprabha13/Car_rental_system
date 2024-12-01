@@ -4,10 +4,10 @@
 #include "User.h"
 #include "Staff.h"
 #include "Admin.h"
-#include "Authentication.cpp"
-// #include "User.cpp"
+
 using namespace std;
 
+// Function to show main menu for role selection
 void showMainMenu() {
     cout << "Welcome to the Car Rental System!" << endl;
     cout << "Please select your role:" << endl;
@@ -36,17 +36,57 @@ int main() {
     cout << "Enter password: ";
     cin >> password;
 
-    // Check if user is existing or needs signup
     bool userExists = false;
-    for (auto user : users) {
-        if (user->getName() == username) {
-            userExists = true;
+    User* loggedInUser = nullptr;
+
+    switch (choice) {
+        case 1:  // Customer
+            cout << "You selected Customer!" << endl;
             break;
-        }
+        case 2:  // Staff
+            cout << "You selected Staff!" << endl;
+            break;
+        case 3:  // Admin
+            cout << "You selected Admin!" << endl;
+            break;
+        default:
+            cout << "Invalid role selection!" << endl;
+            return 0;
     }
 
-    if (!userExists) {
-        // User is new, let's sign them up
+    // Ask whether to Sign In or Sign Up
+    cout << "Do you want to Sign In or Sign Up?" << endl;
+    cout << "1. Sign In" << endl;
+    cout << "2. Sign Up" << endl;
+    int actionChoice;
+    cin >> actionChoice;
+
+    if (actionChoice == 1) {
+        // Sign In
+        loggedInUser = Authentication::signIn(users, username, password);
+        if (loggedInUser) {
+            cout << "Logged in successfully!" << endl;
+            loggedInUser->displayInfo();
+        } else {
+            cout << "Login failed. Incorrect username or password." << endl;
+        }
+    } else if (actionChoice == 2) {
+        // Sign Up
+        bool userExists = false;
+
+        // Check if user already exists
+        for (auto user : users) {
+            if (user->getName() == username) {
+                userExists = true;
+                break;
+            }
+        }
+
+        if (userExists) {
+            cout << "User already exists. Please sign in instead." << endl;
+            return 0;
+        }
+
         cout << "User not found! Please sign up." << endl;
 
         string name, address, phone, license, aadhar, photoID;
@@ -67,18 +107,20 @@ int main() {
         bool signupSuccess = Authentication::signUp(users, username, password, name, address, phone, license, aadhar, photoID);
 
         if (!signupSuccess) {
-            return 0;  // Exit if signup failed
+            cout << "Signup failed. Please try again." << endl;
+            return 0;
         }
-    }
 
-    // Simulate signin
-    User* loggedInUser = Authentication::signIn(users, username, password);
-
-    if (loggedInUser) {
-        cout << "Logged in successfully!" << endl;
-        loggedInUser->displayInfo();
+        // Now the user is signed up, let's log them in
+        loggedInUser = Authentication::signIn(users, username, password);
+        if (loggedInUser) {
+            cout << "Logged in successfully!" << endl;
+            loggedInUser->displayInfo();
+        } else {
+            cout << "Login failed after signup. Something went wrong." << endl;
+        }
     } else {
-        cout << "Login failed. Incorrect username or password." << endl;
+        cout << "Invalid action selection!" << endl;
     }
 
     return 0;
