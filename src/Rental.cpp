@@ -6,17 +6,18 @@ Rental::Rental(int rentalID, User* customer, Car* car, int rentalDays) : rentalI
 }
 
 void Rental::calculateTotalCost() {
-    totalCost = rentalDays * car->pricePerDay;
+    totalCost = rentalDays * car->getPricePerDay();  // Use the getter for pricePerDay
 }
 
 void Rental::rentCar() {
-    if (car->isAvailable) {
+    if (car->getAvailability()) {  // Use the getter for isAvailable
         car->setAvailability(false); // Mark as rented
-        std::cout << "Car rented successfully!\n";
+        std::cout << "Car rented successfully!" << std::endl;
     } else {
-        std::cout << "Car is not available for rent.\n";
+        std::cout << "Car is not available for rent." << std::endl;
     }
 }
+
 
 void Rental::returnCar() {
     car->setAvailability(true); // Mark as available
